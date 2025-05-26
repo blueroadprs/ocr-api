@@ -1,4 +1,4 @@
 Flask
-PyMuPDF
 pytesseract
+PyMuPDF
 Pillow
