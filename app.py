@@ -13,8 +13,6 @@ def ocr_pdf():
             return jsonify({'error': 'No file provided'}), 400
 
         file = request.files['file']
-        print(f"📄 Archivo recibido: {file.filename}, tipo: {file.content_type}")
-
         pdf = fitz.open(stream=file.read(), filetype='pdf')
 
         full_text = []
@@ -26,11 +24,10 @@ def ocr_pdf():
 
         return jsonify({'text': "\n".join(full_text)})
     except Exception as e:
-        print(f"🔥 ERROR OCR: {str(e)}")
+        print("🔥 ERROR OCR:", str(e))
         return jsonify({'error': str(e)}), 500
 
 import os
-
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
