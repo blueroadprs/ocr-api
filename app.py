@@ -8,20 +8,26 @@ app = Flask(__name__)
 
 @app.route('/ocr', methods=['POST'])
 def ocr_pdf():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file provided'}), 400
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
 
-    file = request.files['file']
-    pdf = fitz.open(stream=file.read(), filetype='pdf')
+        file = request.files['file']
+        print(f"📄 Archivo recibido: {file.filename}, tipo: {file.content_type}")
 
-    full_text = []
-    for page in pdf:
-        pix = page.get_pixmap(dpi=300)
-        img = Image.open(io.BytesIO(pix.tobytes("png")))
-        text = pytesseract.image_to_string(img, lang='spa')
-        full_text.append(text)
+        pdf = fitz.open(stream=file.read(), filetype='pdf')
 
-    return jsonify({'text': "\n".join(full_text)})
+        full_text = []
+        for page in pdf:
+            pix = page.get_pixmap(dpi=300)
+            img = Image.open(io.BytesIO(pix.tobytes("png")))
+            text = pytesseract.image_to_string(img, lang='spa')
+            full_text.append(text)
+
+        return jsonify({'text': "\n".join(full_text)})
+    except Exception as e:
+        print(f"🔥 ERROR OCR: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 import os
 
